@@ -1,5 +1,5 @@
-$primaryColor: rgb(255, 0, 93);
-$secondaryColor: rgba(255, 217, 0, 1);
+$primaryColor: #ff005d;
+$secondaryColor: #ffd900;
 $tertiaryColor: #fff;
 $whiteColor: #fff;
 $blackColor: #000000;
@@ -117,7 +117,7 @@ body{
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #000a;
+    background-color: rgba($darkColor, 0.6);
     backdrop-filter: blur(20px);
     z-index: 100;
     background-position: center;
@@ -147,6 +147,8 @@ body{
         background-color: #fff1;
         border: 1px solid #fff1;
         border-radius: 30px;
+        object-fit: cover;
+        object-position: center;
     }
 
     .close-btn{
@@ -286,7 +288,7 @@ body{
 
 .links-holder{
     position: fixed;
-    bottom: 20px;
+    bottom: 30px;
     padding: 5px 5px;
     border-radius: 100px;
     gap: 10px;
