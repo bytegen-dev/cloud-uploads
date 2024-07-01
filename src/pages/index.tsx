@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import FileUpload from "../components/FileUpload"
+import BigImage from "../components/BigImage"
 import { FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
@@ -11,6 +12,20 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [showMenu, setShowMenu] = useState(false)
+  const [showingBigImage, setShowingBigImage] = useState(false)
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [bigImageDetails, setBigImageDetails] = useState(null)
+  const showBigImage = (image:any)=>{
+    setBigImageDetails(image)
+    setShowingBigImage(true)
+  }
+
+  const removeImage = (image:any) => {
+    setShowingBigImage(false)
+    setBigImageDetails(null)
+    setSelectedImages(selectedImages.filter(img => img !== image));
+    URL.revokeObjectURL(image.preview); // Clean up object URL
+  };
   return (
     <>
       <Head>
@@ -19,6 +34,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
+        ()=>{
+          setShowingBigImage(false)
+        }
+      } />}
       <main className="page home">
         <div className="links-holder">
           <a href="https://github.com/bytegen-dev/cloud-uploads" className="link-btn" target="_blank" rel="noreferrer">
@@ -49,7 +69,7 @@ export default function Home() {
         </div>
       <div className="upload-holder">
         <h1>Upload Images</h1>
-        <FileUpload />
+        <FileUpload selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
       </div>
       </main>
     </>

@@ -1,15 +1,15 @@
 // firebaseConfig.js
-import { initializeApp } from "firebase/app";
+import { initializeApp } from 'firebase/app';
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCEsR0pAzJfw_a7pzRGdh9m6L2nuvTZXc4",
-    authDomain: "cloud-uploads-app.firebaseapp.com",
-    projectId: "cloud-uploads-app",
-    storageBucket: "cloud-uploads-app.appspot.com",
-    messagingSenderId: "477027366333",
-    appId: "1:477027366333:web:94174a3542fae1a0208ed4",
-    measurementId: "G-TBRHF68QMV"
+    apiKey: process.env.NEXT_PUBLIC_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
