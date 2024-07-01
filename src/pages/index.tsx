@@ -36,6 +36,7 @@ export default function Home() {
           setShowingBigImage(false)
         }
       } />}
+      <div className="top-el"></div>
       <main className="page home">
         <div className="links-holder">
           <a href="https://github.com/bytegen-dev/cloud-uploads" className="link-btn" target="_blank" rel="noreferrer">

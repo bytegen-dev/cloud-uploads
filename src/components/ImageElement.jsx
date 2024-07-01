@@ -15,7 +15,10 @@ const ImageElement = ({index, image, onRemove, showBigImage }) => {
             showBigImage(image)
         }}>
         {isInvalid && <div className="invalid-overlay">Invalid Image</div>}
-        <button className="remove-button" onClick={() => onRemove(image)}><HiX /></button>
+        <button className="remove-button" onClick={(e) => {
+          e.stopPropagation()
+          onRemove(image)
+        }}><HiX /></button>
         <style jsx>{`
             .image-element {
             position: relative;
