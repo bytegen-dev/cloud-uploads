@@ -10,7 +10,7 @@ const ImageElement = ({index, image, onRemove, showBigImage }) => {
   return (
     <>
         <div className={`image-element ${showBig ? "big" : ""}`} style={{ backgroundImage: `url(${preview})`,
-            animationDelay: `${(index + 1)*0.1}s`,
+            animationDelay: `${(index + 1)*0.05}s`,
         }} aria-description={name} onClick={()=>{
             showBigImage(image)
         }}>
