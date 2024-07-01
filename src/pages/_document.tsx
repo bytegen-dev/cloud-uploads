@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-      <meta property="theme-color" content="#222222"></meta>
+      <meta property="theme-color" content="#323232"></meta>
         <meta name="title" content="Cloudx by Bytegen"/>
         <meta name="description" content="Upload files to cloudinary save data to firebase, export as .json or as javascript array"/>
 
