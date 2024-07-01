@@ -5,13 +5,13 @@ import axios from 'axios';
 import { db } from '../config/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import ImageElement from './ImageElement';
+import { FaTrashAlt } from 'react-icons/fa';
 
-const FileUpload = () => {
-    const [selectedImages, setSelectedImages] = useState([]);
+const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
   const [uploadedImages, setUploadedImages] = useState([]);
 
   const onDrop = useCallback(async (acceptedFiles) => {
-    if (acceptedFiles.length + selectedImages.length > 100) {
+    if (acceptedFiles.length + selectedImages.length > 500) {
       alert("You can upload a maximum of 100 images at once");
       return;
     }
@@ -86,6 +86,8 @@ const FileUpload = () => {
     directory: true // Allow directory uploads
   });
 
+  const invalidImages = selectedImages?.filter(img => img.isInvalid || !img.preview)
+
   return (
     <>
       {selectedImages.length <= 0 && <div {...getRootProps()} className="dropzone">
@@ -95,13 +97,43 @@ const FileUpload = () => {
         <p>Drag 'n' drop some files here, or click to select files</p>
       </div>}
       {selectedImages.length > 0 && <>
+        <div className="clear-holder">
+            {invalidImages?.length > 0 && <button className="clear-btn invalid" onClick={()=>{
+                const images = selectedImages
+                const imageUrls = invalidImages?.map(img => {
+                    if(img.preview){
+                        URL.revokeObjectURL(img.preview);
+                    }
+                    return img
+                })
+                const filterInvalid = images?.filter(img => !img.isInvalid || !img.preview)
+                setSelectedImages(filterInvalid)
+            }}>
+                Clear Invalid <span>{invalidImages?.length}</span>
+            </button>}
+            <button className="clear-btn" onClick={()=>{
+                const imageUrls = selectedImages?.map(img => {
+                    if(img.preview){
+                        URL.revokeObjectURL(img.preview);
+                    }
+                    return img
+                })
+                setSelectedImages([])
+            }}>
+                Clear <FaTrashAlt />
+            </button>
+        </div>
         <div className="images-container">
-            {selectedImages.map((image, index) => (
-            <ImageElement key={index} image={image} onRemove={removeImage} />
-            ))}
+            <div className="add-images" {...getInputProps()}>
+            </div>
+            {selectedImages?.map((image, index) => {
+            const key = `${image.name}${index}`
+            return (
+            <ImageElement showBigImage={showBigImage} index={index} key={key || index} image={image} onRemove={removeImage} />
+            )})}
         </div>
         {selectedImages.length > 0 && (
-            <button className='upload-btn' onClick={uploadImages}>Upload Selected Images</button>
+            <button className='upload-btn' disabled={invalidImages?.length} onClick={uploadImages}>Upload Selected Images</button>
         )}
         {<div className="uploaded-images-container">
             {uploadedImages.map((image, index) => (
