@@ -112,13 +112,16 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
                 Clear Invalid <span>{invalidImages?.length}</span>
             </button>}
             <button className="clear-btn" onClick={()=>{
-                const imageUrls = selectedImages?.map(img => {
-                    if(img.preview){
-                        URL.revokeObjectURL(img.preview);
-                    }
-                    return img
-                })
-                setSelectedImages([])
+                const confirm = window.confirm("Are you sure you want to clear all selected files?")
+                if(confirm){
+                  const imageUrls = selectedImages?.map(img => {
+                      if(img.preview){
+                          URL.revokeObjectURL(img.preview);
+                      }
+                      return img
+                  })
+                  setSelectedImages([])
+                }
             }}>
                 Clear <FaTrashAlt />
             </button>

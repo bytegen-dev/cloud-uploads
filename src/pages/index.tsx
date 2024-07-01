@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import FileUpload from "../components/FileUpload"
+import Menu from "../components/Menu"
 import BigImage from "../components/BigImage"
 import { FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -49,9 +50,7 @@ export default function Home() {
             <FaLinkedinIn />
           </a>
         </div>
-        <div className={`menu ${showMenu ? "show" : ""}`}>
-          Menu
-        </div>
+        <Menu showMenu={showMenu} />
         <div className="header">
           <div className="heading left">
             Cloudx
