@@ -5,14 +5,17 @@ import axios from 'axios';
 import { db } from '../config/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import ImageElement from './ImageElement';
-import { FaTrashAlt } from 'react-icons/fa';
+import { FaCheck, FaTrashAlt } from 'react-icons/fa';
 
-const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
+const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selectedImages, setSelectedImages}) => {
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [progress, setProgress] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [error, setError] = useState(null);
 
   const onDrop = useCallback(async (acceptedFiles) => {
     if (acceptedFiles.length + selectedImages.length > 500) {
-      alert("You can upload a maximum of 100 images at once");
+      alert("You can upload a maximum of 500 images at once");
       return;
     }
 
@@ -28,6 +31,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
     }));
 
     setSelectedImages(prevImages => [...prevImages, ...newImages]);
+    setProgress(0)
   }, [selectedImages]);
 
   const validateImage = async (file) => {
@@ -39,40 +43,86 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
     });
   };
 
-  const uploadImages = async () => {
-    const imagesToUpload = selectedImages;
+  const unsignedUploadPreset = "cloudx"
 
-    for (const image of imagesToUpload) {
-      const reader = new FileReader();
-      reader.readAsDataURL(image.file);
-      reader.onload = async () => {
-        const fileBase64 = reader.result;
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY 
+  const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET // Click 'View Credentials' below to copy your API secret
+  
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
 
-        try {
-          const response = await axios.post('/api/upload', { file: fileBase64 });
-          const { secure_url, original_filename, format, created_at, bytes, public_id } = response.data;
+  const uploadFile = async (file, index, totalFiles) => {
+    const fd = new FormData();
+    fd.append('upload_preset', unsignedUploadPreset);
+    fd.append('tags', 'browser_upload'); // Optional - add tags for image admin in Cloudinary
+    fd.append('file', file.file);
 
-          const imageMeta = {
-            name: original_filename,
-            fileType: format,
-            uploadDate: created_at,
-            size: bytes,
-            cloudinaryLink: secure_url,
-            publicId: public_id,
-            isInvalid: false
-          };
+    try {
+      console.log(`Uploading File ${file.name}`)
+      const response = await axios.post(url, fd);
+      const data = response.data;
+      const { secure_url, height, width, original_filename, bytes, format, created_at } = data;
 
-          setUploadedImages(prevImages => [...prevImages, imageMeta]);
+      // Save to Firebase
+      console.log(`Uploaded File ${file.name} Succesful`)
 
-          // Save to Firebase
-          await addDoc(collection(db, 'images'), imageMeta);
-        } catch (error) {
-          console.error('Upload failed', error);
-        }
-      };
+
+      console.log(`Updating Firebase with ${file.name}`)
+
+      await addDoc(collection(db, currentDb.id), {
+        name: original_filename,
+        size: bytes,
+        type: format,
+        url: secure_url,
+        createdAt: created_at,
+        height,
+        width,
+      });
+
+      console.log(`Updating Firebase with ${file.name} Successful`)
+
+      const newProgress = ((index + 1) / totalFiles) * 100
+
+      console.log(`Progress is ${newProgress}%`)
+
+      setProgress(() => {
+        return newProgress > 100 ? 100 : newProgress
+      });
+
+      if (index < totalFiles - 1) {
+        await uploadFile(selectedImages[index + 1], index + 1, totalFiles);
+      } else {
+        setProgress(100);
+        
+        setTimeout(()=>{
+          setIsCompleted(true);
+          setIsUploading(false)
+        }, 2000)
+      }
+    } catch (error) {
+      console.error(`Upload failed @ File: ${index}`, error);
+      setError(`Upload failed @ File: ${index}`);
+      setIsUploading(false)
+      setProgress(0)
     }
+  };
 
-    setSelectedImages([]);
+  const updateProgress = (index, fileProgress, totalFiles) => {
+    const averageProgress = (progress * index + fileProgress) / (index + 1);
+    setProgress(averageProgress);
+
+    if (index === totalFiles - 1 && fileProgress === 100) {
+      setProgress(100); // Ensure the progress hits 100% when the last file is fully uploaded
+    }
+  };
+
+  const handleUpload = () => {
+    if (selectedImages.length > 0) {
+      setIsUploading(true);
+      setIsCompleted(false);
+      setProgress(0)
+      uploadFile(selectedImages[0], 0, selectedImages.length);
+    }
   };
 
   const removeImage = (image) => {
@@ -80,7 +130,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
     URL.revokeObjectURL(image.preview); // Clean up object URL
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop, 
     multiple: true,
     directory: true // Allow directory uploads
@@ -90,7 +140,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
 
   return (
     <>
-      {selectedImages.length <= 0 && <div {...getRootProps()} className="dropzone">
+      {selectedImages.length <= 0 && <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
         <input style={{
             display: "none",
         }} {...getInputProps()} />
@@ -102,7 +152,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
                 const images = selectedImages
                 const imageUrls = invalidImages?.map(img => {
                     if(img.preview){
-                        URL.revokeObjectURL(img.preview);
+                      URL.revokeObjectURL(img.preview);
                     }
                     return img
                 })
@@ -132,13 +182,13 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
             <div className="add-images" {...getInputProps()}>
             </div>
             {selectedImages?.map((image, index) => {
-            const key = `${image.name}${index}`
+            const key = `${index}`
             return (
             <ImageElement showBigImage={showBigImage} index={index} key={key || index} image={image} onRemove={removeImage} />
             )})}
         </div>
         {selectedImages.length > 0 && (
-            <button className='upload-btn' disabled={invalidImages?.length} onClick={uploadImages}>Upload Selected Images</button>
+            <button className='upload-btn' disabled={invalidImages?.length} onClick={handleUpload}>Upload Selected Images</button>
         )}
         {<div className="uploaded-images-container">
             {uploadedImages.map((image, index) => (
@@ -146,6 +196,32 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
             ))}
         </div>}
       </>}
+      {isUploading && <div className="loader">
+        Uploading Files...
+        <div className="spinner"></div>
+        {progress}%
+      </div>}
+      {isCompleted && <div className="loader">
+        Uploading Completed
+        <div className="icon">
+          <FaCheck />
+        </div>
+        <button className="done-btn" onClick={()=>{
+          setSelectedImages([])
+          setIsCompleted(false)
+        }}>
+          Done
+        </button>
+      </div>}
+      {error && <div className="loader error">
+        {error}
+        <div className="icon">
+          <FaCheck />
+        </div>
+        <button className="restart-btn">
+          Restart Upload
+        </button>
+      </div>}
     </>
   );
 };
