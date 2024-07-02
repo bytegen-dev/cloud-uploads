@@ -30,7 +30,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Cloudx ~ Bytegen labs</title>
+        <title>Cloudx ~ SpacelabZ Gadgets</title>
       </Head>
       {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
         ()=>{

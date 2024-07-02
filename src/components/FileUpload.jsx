@@ -112,6 +112,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
                 Clear Invalid <span>{invalidImages?.length}</span>
             </button>}
             <button className="clear-btn" onClick={()=>{
+              setTimeout(()=>{
                 const confirm = window.confirm("Are you sure you want to clear all selected files?")
                 if(confirm){
                   const imageUrls = selectedImages?.map(img => {
@@ -122,6 +123,7 @@ const FileUpload = ({showBigImage, selectedImages, setSelectedImages}) => {
                   })
                   setSelectedImages([])
                 }
+              }, 700)
             }}>
                 Clear <FaTrashAlt />
             </button>
