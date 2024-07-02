@@ -12,6 +12,7 @@ $darkColor: #323232;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 ::selection{
@@ -21,6 +22,14 @@ $darkColor: #323232;
 
 ::-webkit-scrollbar{
     width: 0px;
+}
+
+button{
+    cursor: pointer;
+
+    &:disabled{
+        cursor: not-allowed;
+    }
 }
 
 p{
@@ -294,7 +303,24 @@ body{
         background-clip: text;
         color: transparent;
         background-color: gold;
-        background-image: linear-gradient(135deg, rgba(255, 0, 119, 0.884), rgba(255, 217, 0, 0.8));
+        background-image: linear-gradient(135deg, rgba(255, 0, 119, 0.884), rgba(255, 217, 0, 0.8), rgba(255, 0, 119, 0.884), rgba(255, 217, 0, 0.8));
+        background-size: 400%;
+        background-position: left;
+        transition: all 0.4s ease;
+        animation: move-logo 20s linear forwards infinite;
+
+        @keyframes move-logo {
+            0%{
+                background-position: left;
+            }
+            100%{
+                background-position: right;
+            }
+        }
+
+        &:hover{
+
+        }
 
          @media screen and (max-width: 600px) {
             font-size: 26px;
@@ -335,8 +361,8 @@ body{
 .upload-holder{
     position: fixed;
     height: calc(100% - 200px);
-    bottom: 80px;
-    width: calc(100% - 48px);
+    bottom: 90px;
+    max-width: calc(100% - 48px);
     padding: 0;
     max-height: 1000px;
     color: $whiteColor;
@@ -344,7 +370,8 @@ body{
     flex-direction: column;
     align-items: center;
     text-align: center;
-    max-width: 1000px;
+    // max-width: 1000px;
+    width: fit-content !important;
 
     h1{
         max-width: 700px;
@@ -397,8 +424,9 @@ body{
             flex-direction: row;
             flex-wrap: wrap;
             overflow-y: scroll;
+            padding: 20px 15px;
             padding-bottom: 50px !important;
-            gap: 10px;
+            gap: 15px;
             min-height: fit-content;
             width: fit-content !important;
             cursor: default;
@@ -407,9 +435,9 @@ body{
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                width: 200px;
-                min-width: 200px;
-                height: 200px;
+                width: 100px;
+                min-width: 100px;
+                height: 100px;
                 border-radius: 20px;
                 box-shadow: 0px 0px 0px 1px #fff1;
                 cursor: default;
@@ -417,6 +445,7 @@ body{
                 background-color: rgba($whiteColor, 0.03);
                 animation: show-image 0.3s ease forwards;
                 opacity: 0;
+                margin: 0;
 
                 &.big{
                     z-index: 100;
@@ -697,5 +726,87 @@ body{
         opacity: 1;
         pointer-events: all;
         visibility: visible;
+    }
+}
+
+.backdrop{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba($blackColor, 0.4);
+    z-index: 11999;
+    // backdrop-filter: blur(2px);
+}
+
+.popup-menu{
+    position: fixed;
+    z-index: 12000;
+    padding: 20px;
+    background-color: #fff1;
+    border: 1px solid #fff1;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(30px);
+    transition: all 0.2s ease;
+    animation: show-popup 0.3s ease forwards;
+
+    @keyframes show-popup {
+        0%{
+            transform: scale(0.8);
+            opacity: 0;
+        }
+    }
+
+    .close-btn{
+        position: fixed;
+        left: 10px;
+        top: -10px;
+        width: 20px;
+        height: 20px;
+        border-radius: 1000px;
+        border: 1px solid #fff1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        background-color: #352c2f;
+        backdrop-filter: blur(100px);
+        transition: all 0.5s ease;
+
+        &:hover, &:focus{
+            transform: rotate(360deg);
+        }
+    }
+
+    .btn-holder{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .refresh-btn{
+            padding: 5px 10px;
+            background-color: #fff1;
+            border: none;
+            border-radius: 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid #fff1;
+            transition: all 0.2s ease;
+            cursor: pointer;
+
+            &:hover, &:focus{
+                background-color: #fff2;
+            }
+        }
     }
 }
