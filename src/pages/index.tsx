@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import FileUpload from "../components/FileUpload"
 import Menu from "../components/Menu"
 import BigImage from "../components/BigImage"
+import Notification from "../components/Notification"
 import { FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
@@ -16,10 +17,29 @@ export default function Home() {
   const [showingBigImage, setShowingBigImage] = useState(false)
   const [selectedImages, setSelectedImages] = useState([]);
   const [bigImageDetails, setBigImageDetails] = useState(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [notifications, setNotifications] = useState([
+    {
+      content: "Test notification",
+      type: "success",
+      imgUrl: "jkhjghf",
+    },
+    {
+      content: "Test notification 2",
+      type: "error",
+      imgUrl: "axaax",
+    },
+  ])
+
   const showBigImage = (image:any)=>{
     setBigImageDetails(image)
     setShowingBigImage(true)
   }
+
+  const [currentDb, setCurrentDb] = useState({
+    name: "Spacelabz Gadgets",
+    id: "spacelabz-gadgets"
+  })
 
   const removeImage = (image:any) => {
     setShowingBigImage(false)
@@ -32,6 +52,7 @@ export default function Home() {
       <Head>
         <title>Cloudx ~ SpacelabZ Gadgets</title>
       </Head>
+      {/* <Notification notifications={notifications} setNotifications={setNotifications} /> */}
       {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
         ()=>{
           setShowingBigImage(false)
@@ -56,7 +77,7 @@ export default function Home() {
             Cloudx
           </div>
           <div className="heading right">
-            <div className="current-bucket">Spacelabz project</div>
+            <div className="current-bucket">{currentDb.name}</div>
             <div className="hamburger" onClick={()=>{
               setShowMenu(!showMenu)
             }}>
@@ -64,9 +85,9 @@ export default function Home() {
             </div> 
           </div>
         </div>
-      <div className="upload-holder">
+      <div className={`upload-holder ${isUploading ? "uploading" : ""}`}>
         <h1>Upload Images</h1>
-        <FileUpload selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
+        <FileUpload isUploading={isUploading} setIsUploading={setIsUploading} currentDb={currentDb} selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
       </div>
       </main>
     </>

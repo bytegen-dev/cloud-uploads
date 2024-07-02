@@ -13,6 +13,7 @@ export default function App({ Component, pageProps }: AppProps) {
     })
     window.addEventListener("contextmenu", (e)=>{
       e.preventDefault()
+      setShowPopup(false)
       setShowPopup(true)
       if(!showPopup){
         setCursorPosition({ x: e.clientX, y: e.clientY });
