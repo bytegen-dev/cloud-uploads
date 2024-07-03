@@ -6,6 +6,7 @@ import { db } from '../config/firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import ImageElement from './ImageElement';
 import { FaCheck, FaTrashAlt } from 'react-icons/fa';
+import { HiX } from 'react-icons/hi';
 
 const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selectedImages, setSelectedImages}) => {
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -49,7 +50,7 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
   const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY 
   const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET // Click 'View Credentials' below to copy your API secret
   
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+  const urlX = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
 
   const uploadFile = async (file, index, totalFiles) => {
     const fd = new FormData();
@@ -59,7 +60,7 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
 
     try {
       console.log(`Uploading File ${file.name}`)
-      const response = await axios.post(url, fd);
+      const response = await axios.post(urlX, fd);
       const data = response.data;
       const { secure_url, url, height, width, original_filename, bytes, format, created_at } = data;
 
@@ -143,88 +144,92 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
 
   return (
     <>
-      {selectedImages.length <= 0 && <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
-        <input style={{
-            display: "none",
-        }} {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
-      </div>}
-      {selectedImages.length > 0 && <>
-        <div className="clear-holder">
-            {invalidImages?.length > 0 && <button className="clear-btn invalid" onClick={()=>{
-                const images = selectedImages
-                const imageUrls = invalidImages?.map(img => {
-                    if(img.preview){
-                      URL.revokeObjectURL(img.preview);
-                    }
-                    return img
-                })
-                const filterInvalid = images?.filter(img => !img.isInvalid || !img.preview)
-                setSelectedImages(filterInvalid)
-            }}>
-                Clear Invalid <span>{invalidImages?.length}</span>
-            </button>}
-            <button className="clear-btn" onClick={()=>{
-              setTimeout(()=>{
-                const confirm = window.confirm("Are you sure you want to clear all selected files?")
-                if(confirm){
-                  const imageUrls = selectedImages?.map(img => {
+      {cloudName && <>
+        {selectedImages.length <= 0 && <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
+          <input style={{
+              display: "none",
+          }} {...getInputProps()} />
+          <p>Drag 'n' drop some files here, or click to select files</p>
+        </div>}
+        {selectedImages.length > 0 && <>
+          <div className="clear-holder">
+              {invalidImages?.length > 0 && <button className="clear-btn invalid" onClick={()=>{
+                  const images = selectedImages
+                  const imageUrls = invalidImages?.map(img => {
                       if(img.preview){
-                          URL.revokeObjectURL(img.preview);
+                        URL.revokeObjectURL(img.preview);
                       }
                       return img
                   })
-                  setSelectedImages([])
-                }
-              }, 700)
-            }}>
-                Clear <FaTrashAlt />
-            </button>
-        </div>
-        <div className="images-container">
-            <div className="add-images" {...getInputProps()}>
-            </div>
-            {selectedImages?.map((image, index) => {
-            const key = `${index}`
-            return (
-            <ImageElement showBigImage={showBigImage} index={index} key={key || index} image={image} onRemove={removeImage} />
-            )})}
-        </div>
-        {selectedImages.length > 0 && (
-            <button className='upload-btn' disabled={invalidImages?.length} onClick={handleUpload}>Upload Selected Images</button>
-        )}
-        {<div className="uploaded-images-container">
-            {uploadedImages.map((image, index) => (
-            <ImageElement key={index} image={image} onRemove={() => {}} /> // Add remove functionality if needed
-            ))}
+                  const filterInvalid = images?.filter(img => !img.isInvalid || !img.preview)
+                  setSelectedImages(filterInvalid)
+              }}>
+                  Clear Invalid <span>{invalidImages?.length}</span>
+              </button>}
+              <button className="clear-btn" onClick={()=>{
+                setTimeout(()=>{
+                  const confirm = window.confirm("Are you sure you want to clear all selected files?")
+                  if(confirm){
+                    const imageUrls = selectedImages?.map(img => {
+                        if(img.preview){
+                            URL.revokeObjectURL(img.preview);
+                        }
+                        return img
+                    })
+                    setSelectedImages([])
+                  }
+                }, 700)
+              }}>
+                  Clear <FaTrashAlt />
+              </button>
+          </div>
+          <div className="images-container">
+              <div className="add-images" {...getInputProps()}>
+              </div>
+              {selectedImages?.map((image, index) => {
+              const key = `${index}`
+              return (
+              <ImageElement showBigImage={showBigImage} index={index} key={key || index} image={image} onRemove={removeImage} />
+              )})}
+          </div>
+          {selectedImages.length > 0 && (
+              <button className='upload-btn' disabled={invalidImages?.length} onClick={handleUpload}>Upload Selected Images</button>
+          )}
+          {<div className="uploaded-images-container">
+              {uploadedImages.map((image, index) => (
+              <ImageElement key={index} image={image} onRemove={() => {}} /> // Add remove functionality if needed
+              ))}
+          </div>}
+        </>}
+        {isUploading && <div className="loader">
+          Uploading Files...
+          <div className="spinner"></div>
+          {progress}%
+        </div>}
+        {isCompleted && <div className="loader">
+          Uploading Completed
+          <div className="icon">
+            <FaCheck />
+          </div>
+          <button className="done-btn" onClick={()=>{
+            setSelectedImages([])
+            setIsCompleted(false)
+          }}>
+            Done
+          </button>
+        </div>}
+        {error && <div className="loader error">
+          {error}
+          <div className="icon">
+            <HiX />
+          </div>
+          <button className="restart-btn" onClick={()=>{
+            setError(null)
+          }}>
+            Back
+          </button>
         </div>}
       </>}
-      {isUploading && <div className="loader">
-        Uploading Files...
-        <div className="spinner"></div>
-        {progress}%
-      </div>}
-      {isCompleted && <div className="loader">
-        Uploading Completed
-        <div className="icon">
-          <FaCheck />
-        </div>
-        <button className="done-btn" onClick={()=>{
-          setSelectedImages([])
-          setIsCompleted(false)
-        }}>
-          Done
-        </button>
-      </div>}
-      {error && <div className="loader error">
-        {error}
-        <div className="icon">
-          <FaCheck />
-        </div>
-        <button className="restart-btn">
-          Restart Upload
-        </button>
-      </div>}
     </>
   );
 };
