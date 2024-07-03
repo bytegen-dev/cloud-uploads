@@ -263,22 +263,26 @@ body{
     justify-content: space-between;
     align-items: center;
     color: $whiteColor;
-    padding: 10px 24px;
+    padding: 20px 24px;
 
     .hamburger{
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
+        background-color: #fff1;
+        border: 1px solid #fff1;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 1000px;
         cursor: pointer;
+        font-size: 14px;
     }
 
     .right{
         display: flex;
         align-items: center;
         gap: 10px;
+        font-size: 13px;
 
         .current-bucket{
             background-color: #fff1;
@@ -290,7 +294,6 @@ body{
             border: 1px solid #fff1;
             border-radius: 1000px;
             font-size: 14px;
-            opacity: 0.5;
             transition: all 0.3s ease;
             z-index: 20;
             position: relative;
@@ -307,7 +310,6 @@ body{
             }
 
             &:hover{
-                transform: scale(1.1);
                 opacity: 1;
                 cursor: pointer;
             
@@ -317,8 +319,39 @@ body{
                 }
             }
             
-            @media screen and (max-width: 700px) {
-                font-size: 12px;
+        }
+
+        @media screen and (max-width: 600px) {
+            font-size: 14px;
+            gap: 7px;
+
+            .hamburger{
+                width: 35px;
+                height: 35px;
+                font-size: 11px;
+            }
+            
+            .current-bucket{
+                height: 35px;
+                font-size: 13px;
+                padding: 0 15px;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            font-size: 12px;
+            gap: 5px;
+
+            .hamburger{
+                width: 35px;
+                height: 35px;
+                font-size: 11px;
+            }
+            
+            .current-bucket{
+                height: 35px;
+                font-size: 11px;
+                padding: 0 10px;
             }
         }
     }
@@ -384,8 +417,8 @@ body{
 
 .upload-holder{
     position: fixed;
-    height: calc(100% - 200px);
-    bottom: 90px;
+    height: calc(100% - 250px);
+    bottom: 100px;
     max-width: calc(100% - 48px);
     padding: 0;
     max-height: 1000px;
@@ -941,6 +974,12 @@ body{
     background-color: rgba($blackColor, 0.4);
     z-index: 11999;
     // backdrop-filter: blur(2px);
+
+    @media screen and (max-width: 700px) {
+        background-color: rgba($darkColor, 0.2);
+        backdrop-filter: blur(30px);
+        display: none;
+    }
 }
 
 .popup-menu{
@@ -957,6 +996,12 @@ body{
     backdrop-filter: blur(30px);
     transition: all 0.2s ease;
     animation: show-popup 0.3s ease forwards;
+
+    @media screen and (max-width: 700px) {
+        top: calc(100% - 150px) !important;
+        width: 30vw;
+        display: none;
+    }
 
     @keyframes show-popup {
         0%{

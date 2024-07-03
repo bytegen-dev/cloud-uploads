@@ -5,7 +5,7 @@ import FileUpload from "../components/FileUpload"
 import Menu from "../components/Menu"
 import BigImage from "../components/BigImage"
 import Notification from "../components/Notification"
-import { FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
+import { FaBars, FaGithub, FaLinkedinIn, FaPowerOff } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 import { HiMenuAlt4, HiX } from "react-icons/hi";
@@ -158,7 +158,6 @@ export default function Home() {
       <Head>
         <title>Cloudx ~ SpacelabZ Gadgets</title>
       </Head>
-      {/* <Notification notifications={notifications} setNotifications={setNotifications} /> */}
       {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
         ()=>{
           setShowingBigImage(false)
@@ -183,11 +182,23 @@ export default function Home() {
             Cloudx
           </div>
           <div className="heading right">
-            {currentDb?.id && <div className="current-bucket">{currentDb.name}</div>}
+            {currentDb?.id ? <div className="current-bucket">{currentDb.name}</div> : <div className="current-bucket" style={{
+              pointerEvents: "none"
+            }}>Signed out</div>}
             <div className="hamburger" onClick={()=>{
-              setShowMenu(!showMenu)
+              const confirm = window.confirm(`Are you sure you want to Sign out of ${currentDb.name}?`)
+              if(confirm){
+                setIsLoading(true)
+                setTimeout(()=>{
+                  setCurrentDb({
+                    name: "",
+                    id: ""
+                  })
+                  setIsLoading(false)
+                }, 1500)
+              }
             }}>
-               {showMenu ? <HiX size={30} /> : <HiMenuAlt4 size={35} />}
+              <FaPowerOff />
             </div> 
           </div>
         </div>
@@ -267,7 +278,6 @@ export default function Home() {
           </div>}
         </div> :
         <div className={`upload-holder ${isUploading ? "uploading" : ""}`}>
-          <h1>Upload Images</h1>
           <FileUpload isUploading={isUploading} setIsUploading={setIsUploading} currentDb={currentDb} selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
         </div>}
       </main>
