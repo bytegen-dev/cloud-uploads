@@ -6,7 +6,7 @@ import PopupMenu from "../components/PopupMenu"
 export default function App({ Component, pageProps }: AppProps) {
   const [showPopup, setShowPopup] = useState(false)
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  useLayoutEffect(()=>{
+  // useLayoutEffect(()=>{
     // window.addEventListener("click", ()=>{
     //   setShowPopup(false)
     // })
@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
     //     setCursorPosition({ x: e.clientX, y: e.clientY });
     //   }
     // })
-  },[])
+  // },[])
   return (
     <>
       {showPopup && <PopupMenu showPopup={showPopup} setShowPopup={setShowPopup} x={cursorPosition.x} y={cursorPosition.y} />}

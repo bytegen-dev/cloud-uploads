@@ -19,7 +19,6 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
           reader.onload = () => {
             const image = reader.result;
             setImageFile(image)
-            sessionStorage.setItem('image', image);
             resolve();
           };
     
@@ -33,18 +32,7 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
     
     useEffect(()=>{
         if(image?.url){
-            const imageFound = sessionStorage?.getItem("image")
-            if(imageFound){
-                sessionStorage?.removeItem("image")
-            }
             saveImageToSession(image?.url)
-        }
-        
-        return ()=>{
-            const imageFoundX = sessionStorage?.getItem("image")
-            if(imageFoundX){
-                sessionStorage?.removeItem("image")
-            }
         }
         
     },[])
