@@ -1,9 +1,9 @@
 // components/FileUpload.js
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { db } from '../config/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 import ImageElement from './ImageElement';
 import { FaCheck, FaTrashAlt } from 'react-icons/fa';
 import { HiX } from 'react-icons/hi';
@@ -142,15 +142,77 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
 
   const invalidImages = selectedImages?.filter(img => img.isInvalid || !img.preview)
 
+  const [adding, setAdding] = useState(false)
+  const [fetchingImages, setFetchingImages] = useState(false)
+
+  const fetchImages = async () =>{
+    try{
+      setFetchingImages(true)
+      const querySnapshot = await getDocs(collection(db, currentDb.id));
+      const images = [];
+      querySnapshot.forEach((doc) => {
+        images.push({ id: doc.id, ...doc.data() });
+      });
+      setUploadedImages(images)
+      setFetchingImages(false)
+    } catch(error){
+      setFetchingImages(false)
+      console.error(error)
+    }
+  }
+
+  useEffect(()=>{
+    if(!adding){
+      fetchImages()
+    }
+  }, [adding])
+
   return (
     <>
+      <h1>{adding ? `${uploadedImages?.length ? "Add" : "Upload"} Images` : "My Images"} {(!adding && uploadedImages?.length > 0) && <small style={{
+        color: "#fff6",
+        fontWeight: "300",
+        fontSize: "15px",
+        marginLeft: "10px",
+        marginTop: "10px",
+      }}><i>{uploadedImages?.length}</i></small>} </h1>
       {cloudName && <>
-        {selectedImages.length <= 0 && <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
-          <input style={{
-              display: "none",
-          }} {...getInputProps()} />
-          <p>Drag 'n' drop some files here, or click to select files</p>
-        </div>}
+        {selectedImages.length <= 0 && <>
+          {adding && <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
+            <input style={{
+                display: "none",
+            }} {...getInputProps()} />
+            <p>Drag 'n' drop some files here, or click to select files</p>
+          </div>}
+          {(!adding) && <>
+            {uploadedImages?.length > 0 ? <div className={`dropzone ${isDragActive ? 'active' : ''} images-container`}>
+              {uploadedImages?.map((image, index) => {
+                const key = `${index}`
+                const newImage = {
+                  preview: image?.url,
+                  name: image?.name,
+                  secureUrl: image?.secureUrl,
+                }
+                return (
+                <ImageElement showBigImage={showBigImage} index={index} key={key || index} image={newImage} onRemove={()=>{}} />
+              )})}
+            </div> : <div className="dropzone">
+              You haven't added any Images
+            </div> }
+          </>}
+          <div className="actions-holder">
+            <div className={`action ${!adding ? "active" : ""}`} onClick={()=>{
+              setAdding(false)
+            }}>
+              View Uploads
+            </div>
+            <div className={`action ${adding ? "active" : ""}`} onClick={()=>{
+              setAdding(true)
+            }}>
+              Add Images
+            </div>
+          </div>
+        </>}
         {selectedImages.length > 0 && <>
           <div className="clear-holder">
               {invalidImages?.length > 0 && <button className="clear-btn invalid" onClick={()=>{
@@ -195,12 +257,11 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
           {selectedImages.length > 0 && (
               <button className='upload-btn' disabled={invalidImages?.length} onClick={handleUpload}>Upload Selected Images</button>
           )}
-          {<div className="uploaded-images-container">
-              {uploadedImages.map((image, index) => (
-              <ImageElement key={index} image={image} onRemove={() => {}} /> // Add remove functionality if needed
-              ))}
-          </div>}
         </>}
+        {fetchingImages && <div className="loader">
+          <div className="spinner"></div>
+          Fetching Images...
+        </div>}
         {isUploading && <div className="loader">
           Uploading Files...
           <div className="spinner"></div>
