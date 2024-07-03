@@ -18,6 +18,10 @@ export default function Home() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [bigImageDetails, setBigImageDetails] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [currentDb, setCurrentDb] = useState({
+    name: "",
+    id: "",
+  })
   const [notifications, setNotifications] = useState([
     {
       content: "Test notification",
@@ -36,10 +40,46 @@ export default function Home() {
     setShowingBigImage(true)
   }
 
-  const [currentDb, setCurrentDb] = useState({
-    name: "Spacelabz Gadgets",
-    id: "spacelabz-gadgets"
-  })
+  const [isCreating, setIsCreating] = useState(false)
+  const [name, setName] = useState("")
+  const [id, setId] = useState("")
+  const [password, setPassword] = useState("")
+
+  const handleCreate = async ()=>{
+    if(name && id && password){
+      if(name.length < 4){
+        alert("Your Database Name must be 4 Characters or more")
+        return
+      }
+      if(id.length < 4){
+        alert("Your Database ID must be 4 Characters or more")
+        return
+      }
+      if(password.length < 8){
+        alert("Your Password must be 8 Characters or more")
+        return
+      }
+    } else{
+      alert("Please Fill the required fields")
+    }
+  }
+  
+  const handleSignin = async ()=>{
+    if(id && password){
+      if(id.length < 4){
+        alert("Your Database ID must be 4 Characters or more")
+        return
+      }
+      if(password.length < 8){
+        alert("Your Password must be 8 Characters or more")
+        return
+      }
+      
+    } else{
+      alert("Please Fill the required fields")
+    }
+  }
+  
 
   const removeImage = (image:any) => {
     setShowingBigImage(false)
@@ -77,7 +117,7 @@ export default function Home() {
             Cloudx
           </div>
           <div className="heading right">
-            <div className="current-bucket">{currentDb.name}</div>
+            {currentDb?.id && <div className="current-bucket">{currentDb.name}</div>}
             <div className="hamburger" onClick={()=>{
               setShowMenu(!showMenu)
             }}>
@@ -85,10 +125,79 @@ export default function Home() {
             </div> 
           </div>
         </div>
-      <div className={`upload-holder ${isUploading ? "uploading" : ""}`}>
-        <h1>Upload Images</h1>
-        <FileUpload isUploading={isUploading} setIsUploading={setIsUploading} currentDb={currentDb} selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
-      </div>
+        {!currentDb?.id ? <div className="upload-holder">
+          <h1>{isCreating ? "Create a Database" : "Sign in"}</h1>
+          {isCreating ? <div className="form dropzone">
+            <div className="input-el">
+              <label htmlFor="">
+                Name*
+              </label>
+              <input type="text" value={name} onChange={(e)=>{
+                setName(e.target.value)
+              }} maxLength={30} minLength={10} required placeholder="My Database" />
+            </div>
+            <div className="input-el">
+              <label htmlFor="">
+                Unique ID*
+              </label>
+              <input type="text" value={id} onChange={(e)=>{
+                setId(e.target.value)
+              }} maxLength={30} minLength={10} required placeholder="my-database-id" />
+            </div>
+            <div className="input-el">
+              <label htmlFor="">
+                Password*
+              </label>
+              <input type="password" value={password} onChange={(e)=>{
+                setPassword(e.target.value)
+              }} maxLength={30} minLength={8} required placeholder="********" />
+            </div>
+            <div className="btn-holder">
+              <button className="btn" onClick={handleCreate}>
+                Create
+              </button>
+            </div>
+          </div> :
+          <div className="form dropzone">
+            <div className="input-el">
+              <label htmlFor="">
+                Database ID*
+              </label>
+              <input type="text" value={id} onChange={(e)=>{
+                setId(e.target.value)
+              }} maxLength={30} minLength={10} required placeholder="my-database-id" />
+            </div>
+            <div className="input-el">
+              <label htmlFor="">
+                Password*
+              </label>
+              <input type="password" value={password} onChange={(e)=>{
+                setPassword(e.target.value)
+              }} maxLength={16} minLength={8} required placeholder="********" />
+            </div>
+            <div className="btn-holder">
+              <button className="btn" onClick={handleSignin}>
+                Continue
+              </button>
+            </div>
+          </div>}
+          <div className="actions-holder">
+            <div className={isCreating ? "active action" : "action"} onClick={()=>{
+              setIsCreating(true)
+            }}>
+              Create
+            </div>
+            <div className={!isCreating ? "active action" : "action"} onClick={()=>{
+              setIsCreating(false)
+            }}>
+              Signin
+            </div>
+          </div>
+        </div> :
+        <div className={`upload-holder ${isUploading ? "uploading" : ""}`}>
+          <h1>Upload Images</h1>
+          <FileUpload isUploading={isUploading} setIsUploading={setIsUploading} currentDb={currentDb} selectedImages={selectedImages} setSelectedImages={setSelectedImages} showBigImage={showBigImage} />
+        </div>}
       </main>
     </>
   );

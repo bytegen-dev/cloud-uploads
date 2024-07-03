@@ -395,7 +395,7 @@ body{
     align-items: center;
     text-align: center;
     // max-width: 1000px;
-    width: fit-content !important;
+    width: 100% !important;
     transition: all 0.4s ease;
 
     h1{
@@ -415,6 +415,27 @@ body{
             border: 1px solid #fff1;
             transform: rotate(45deg);
             background-color: rgba(255, 246, 219, 0.067);
+        }
+    }
+
+    .actions-holder{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 100px;
+        width: 100%;
+        margin-top: 10px;
+
+        .action{
+            padding: 10px;
+            color: #fff4;
+            border-radius: 100px;
+            font-weight: 600;
+            cursor: pointer;
+
+            &.active{
+                color: #fff;
+            }
         }
     }
     
@@ -438,6 +459,72 @@ body{
         align-items: center;
         position: relative;
         cursor: pointer;
+
+        &.form{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            cursor: default;
+
+            .input-el{
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                width: 100%;
+                align-items: flex-start;
+
+                label{
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+
+                input{
+                    padding: 10px 15px;
+                    border-radius: 15px;
+                    width: 100%;
+                    border: none;
+                    background-color: #fff1;
+                    color: #fff;
+                    border: 1px solid #fff1;
+                    outline: none;
+
+                    &::placeholder{
+                        color: #fff9;
+                    }
+
+                    &:focus{
+                        background-color: #fff2;
+                    }
+                }
+            }
+
+            .btn{
+                padding: 10px 20px;
+                border-radius: 1000px;
+                font-weight: 600;
+                border: none;
+                background-color: $primaryColor;
+                color: $whiteColor;
+                transition: all 0.3s ease;
+                cursor: pointer;
+
+                &:hover{
+                    transform: scale(1.05);
+                }
+            }
+
+        }
+
+        .btn-holder{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        
 
         &.active{
             transform: scale(1.05);
