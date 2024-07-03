@@ -37,8 +37,8 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
         
     },[])
 
-    const downloadImage = (image)=>{
-        const url = imageFile
+    const downloadImage = ()=>{
+        const url = image?.url
         const filename = name
 
         console.log("Recieving Blob")
