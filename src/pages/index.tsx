@@ -156,7 +156,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Cloudx ~ SpacelabZ Gadgets</title>
+        <title>Cloudx ~ {currentDb.name || "Bytegen"}</title>
       </Head>
       {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
         ()=>{
@@ -185,7 +185,7 @@ export default function Home() {
             {currentDb?.id ? <div className="current-bucket">{currentDb.name}</div> : <div className="current-bucket" style={{
               pointerEvents: "none"
             }}>Signed out</div>}
-            <div className="hamburger" onClick={()=>{
+            {currentDb?.id && <div className="hamburger" onClick={()=>{
               const confirm = window.confirm(`Are you sure you want to Sign out of ${currentDb.name}?`)
               if(confirm){
                 setIsLoading(true)
@@ -199,7 +199,7 @@ export default function Home() {
               }
             }}>
               <FaPowerOff />
-            </div> 
+            </div>} 
           </div>
         </div>
         {!currentDb?.id ? <div className={`upload-holder ${isLoading ? "uploading" : ""}`}>
