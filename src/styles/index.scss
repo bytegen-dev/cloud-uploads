@@ -429,6 +429,7 @@ body{
     text-align: center;
     // max-width: 1000px;
     width: 100% !important;
+    min-width: 200px;
     transition: all 0.4s ease;
 
     h1{
@@ -579,6 +580,7 @@ body{
             gap: 15px;
             min-height: fit-content;
             width: fit-content !important;
+            min-width: 300px;
             cursor: default;
 
             .image-element{

@@ -257,11 +257,6 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
           {selectedImages.length > 0 && (
               <button className='upload-btn' disabled={invalidImages?.length} onClick={handleUpload}>Upload Selected Images</button>
           )}
-          {<div className="uploaded-images-container">
-              {uploadedImages.map((image, index) => (
-              <ImageElement key={index} image={image} onRemove={() => {}} /> // Add remove functionality if needed
-              ))}
-          </div>}
         </>}
         {fetchingImages && <div className="loader">
           <div className="spinner"></div>
