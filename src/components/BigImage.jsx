@@ -11,7 +11,8 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
 
 
     async function saveImageToSession(url) {
-        const response = await fetch(url);
+        const secureImageUrl = url.replace("http://", "https://");
+        const response = await fetch(secureImageUrl);
         const blob = await response.blob();
         const reader = new FileReader();
     
