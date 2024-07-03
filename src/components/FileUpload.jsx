@@ -61,7 +61,7 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
       console.log(`Uploading File ${file.name}`)
       const response = await axios.post(url, fd);
       const data = response.data;
-      const { secure_url, height, width, original_filename, bytes, format, created_at } = data;
+      const { secure_url, url, height, width, original_filename, bytes, format, created_at } = data;
 
       // Save to Firebase
       console.log(`Uploaded File ${file.name} Succesful`)
@@ -73,7 +73,8 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
         name: original_filename,
         size: bytes,
         type: format,
-        url: secure_url,
+        secure_url: secure_url,
+        url: url,
         createdAt: created_at,
         height,
         width,
@@ -81,7 +82,9 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
 
       console.log(`Updating Firebase with ${file.name} Successful`)
 
-      const newProgress = ((index + 1) / totalFiles) * 100
+      const newProgressFloat = ((index + 1) / totalFiles) * 100
+
+      const newProgress = parseInt(newProgressFloat)
 
       console.log(`Progress is ${newProgress}%`)
 
