@@ -189,6 +189,7 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
               {uploadedImages?.map((image, index) => {
                 const key = `${index}`
                 const newImage = {
+                  ...image,
                   preview: image?.url,
                   name: image?.name,
                   secureUrl: image?.secureUrl,
