@@ -1,20 +1,79 @@
 import { db } from '@/config/firebaseConfig'
 import { deleteDoc, doc } from 'firebase/firestore'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiX } from 'react-icons/hi'
 
 const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
-    const {preview, isInvalid, name} = image
+    const {preview, isInvalid, url, name} = image
     const nameEdited = name?.length > 15 ? `${name?.slice(0, 9)}...${name?.slice(-7)}` : name
+
+  const [imageFile, setImageFile] = useState(null)
+
+
+    async function saveImageToSession(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const reader = new FileReader();
+    
+        return new Promise((resolve, reject) => {
+          reader.onload = () => {
+            const image = reader.result;
+            setImageFile(image)
+            sessionStorage.setItem('image', image);
+            resolve();
+          };
+    
+          reader.onerror = () => {
+            reject(new Error('Failed to read image'));
+          };
+    
+          reader.readAsDataURL(blob);
+        });
+    }
+    
+    useEffect(()=>{
+        if(image?.url){
+            const imageFound = sessionStorage?.getItem("image")
+            if(imageFound){
+                sessionStorage?.removeItem("image")
+            }
+            saveImageToSession(image?.url)
+        }
+        
+        return ()=>{
+            const imageFoundX = sessionStorage?.getItem("image")
+            if(imageFoundX){
+                sessionStorage?.removeItem("image")
+            }
+        }
+        
+    },[])
+
     const downloadImage = (image)=>{
-        const {url, name} = image
+        const url = imageFile
         const filename = name
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+
+        console.log("Recieving Blob")
+
+        fetch(url)
+        .then(response => response.blob())
+        .then(blob => {
+            console.log("Creating blob url")
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            console.log("blob url", blobUrl)
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename || "downloaded-image";
+            
+            document.body.appendChild(link);
+            link.click();
+            console.log("Download in Progress")
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        })
+        .catch(console.error);
     }
 
     const deleteImage = async (image)=>{
@@ -32,6 +91,7 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
             }
         }
     }
+
     return (
     <>
         {<div className="big-image">
@@ -43,14 +103,14 @@ const BigImage = ({image, currentDb, closeBigImage, removeImage}) => {
             </div>
             {isInvalid ? <div className='invalid'>
                 Invalid Image
-            </div> : <img src={preview} alt="" className="img" />}
+            </div> : <img src={imageFile || preview} alt="" className="img" />}
             {image?.url ? <>
                 <div className="actions-holder xtra supa">
-                    <a target="_blank" href={preview} download={name} className="download active action" style={{
+                    <div className="download active action" style={{
                         textDecoration: "none"
-                    }}>
+                    }} onClick={downloadImage}>
                         Download
-                    </a>
+                    </div>
                     <div className="delete action" onClick={()=>{
                         deleteImage(image)
                     }}>

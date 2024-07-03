@@ -153,6 +153,7 @@ export default function Home() {
     setSelectedImages(selectedImages.filter(img => img !== image));
     URL.revokeObjectURL(image.preview); // Clean up object URL
   };
+  
   return (
     <>
       <Head>
