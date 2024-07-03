@@ -16,11 +16,12 @@ const BigImage = ({image, closeBigImage, removeImage}) => {
             {isInvalid ? <div className='invalid'>
                 Invalid Image
             </div> : <img src={preview} alt="" className="img" />}
-            <button className="remove-btn" onClick={()=>{
+            {!image?.url ? <button className="remove-btn" onClick={()=>{
                 removeImage(image)
             }}>
                 Remove
-            </button>
+            </button> : <>
+            </>}
         </div>}
     </>
   )
