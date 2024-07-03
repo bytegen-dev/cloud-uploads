@@ -64,13 +64,35 @@ export default function Home() {
       }
 
       setIsLoading(true)
-      await addDoc(collection(db, "databases"), {
-        name,
-        databaseId: id,
-        password,
-      });
-      setIsLoading(false)
-      setIsCreating(false)
+      try{
+        const querySnapshot = await getDocs(collection(db, "databases"));
+        const databases:any = [];
+        querySnapshot.forEach((doc) => {
+          databases.push({ id: doc.id, ...doc.data() });
+        });
+
+        const databasesIds = databases?.map((database:any)=>{
+          return database?.databaseId
+        })
+
+        if(databasesIds?.includes(id)){
+          alert("Database already Exists")
+          return
+        } else{
+          await addDoc(collection(db, "databases"), {
+            name,
+            databaseId: id,
+            password,
+          });
+          setIsLoading(false)
+          setIsCreating(false)
+        }
+
+      } catch(error){
+        setIsLoading(false)
+        console.error(error)
+        alert("Failed to Create Database")
+      }
     } else{
       alert("Please Fill the required fields")
     }
@@ -89,25 +111,35 @@ export default function Home() {
 
       setIsLoading(true)
 
-      const querySnapshot = await getDocs(collection(db, "databases"));
-      const databases:any = [];
-      querySnapshot.forEach((doc) => {
-        databases.push({ id: doc.id, ...doc.data() });
-      });
-
-      const targetDatabase = databases?.find((database:any)=>{
-        return database?.databaseId === id
-      })
-
-      if(targetDatabase){
-        if(targetDatabase?.password === password){
-          setCurrentDb(targetDatabase)
+      try{
+        const querySnapshot = await getDocs(collection(db, "databases"));
+        const databases:any = [];
+        querySnapshot.forEach((doc) => {
+          databases.push({ id: doc.id, ...doc.data() });
+        });
+  
+        const targetDatabase = databases?.find((database:any)=>{
+          return database?.databaseId === id
+        })
+  
+        if(targetDatabase){
+          if(targetDatabase?.password === password){
+            setCurrentDb(targetDatabase)
+            setIsLoading(false)
+          } else{
+            setIsLoading(false)
+            alert("Wrong Password")
+          }
+        } else{
           setIsLoading(false)
+          alert("404: Database does not exist")
         }
-      } else{
+      } catch(error){
         setIsLoading(false)
-        alert("404: Database does not exist")
+        console.error(error)
+        alert("Failed to Fetch Database")
       }
+
 
     } else{
       alert("Please Fill the required fields")
