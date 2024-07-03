@@ -472,6 +472,27 @@ body{
                 color: #fff;
             }
         }
+
+        &.xtra{
+            gap: 10px;
+            padding: 5px 5px;
+            border-radius: 100px;
+            background-color: rgba($whiteColor, 0.02);
+            border: 1px solid #fff1;
+            width: fit-content;
+
+            .action{
+                padding: 5px 10px;
+                font-size: 14px;
+                background-color: rgba($whiteColor, 0);
+                border: 1px solid #fff0;
+                
+                &.active{
+                    background-color: rgba($whiteColor, 0.03);
+                    border: 1px solid #fff1;
+                }
+            }
+        }
     }
     
     .dropzone, .images-container{
@@ -941,6 +962,108 @@ body{
     }
 }
 
+.actions-holder{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    width: 100%;
+    margin-top: 10px;
+
+    .action{
+        padding: 10px;
+        color: #fff4;
+        border-radius: 100px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &.active{
+            color: #fff;
+        }
+    }
+
+    &.xtra{
+        gap: 10px;
+        padding: 5px 5px;
+        border-radius: 100px;
+        background-color: rgba($whiteColor, 0.02);
+        border: 1px solid #fff1;
+        width: fit-content;
+
+        .action{
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: rgba($whiteColor, 0);
+            border: 1px solid #fff0;
+            
+            &.active{
+                background-color: rgba($whiteColor, 0.03);
+                border: 1px solid #fff1;
+            }
+        }
+
+        &.supa{
+            position: fixed;
+            bottom: 30px;
+            gap: 0px;
+
+            .action{
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 1000px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+                &.download{
+                    background-image: linear-gradient(135deg, $primaryColor, $secondaryColor);
+                    border: none;
+                    padding: 10px 30px;
+                    font-size: 18px;
+                    width: 200px;
+                    transition: all 0.5s ease;
+                    z-index: 3;
+
+                    &:disabled{
+                        cursor: not-allowed;
+                    }
+
+                    &:hover, &:active, &:focus{
+                        margin-right: -150px;
+                    }
+                }
+
+                &.delete{
+                    width: 150px;
+                    color: #fff;
+                }
+                
+                @media screen and (max-width: 500px){
+                    font-size: 15px;
+                    &.download{
+                        background-image: linear-gradient(135deg, $primaryColor, $secondaryColor);
+                        border: none;
+                        padding: 10px 30px;
+                        font-size: 16px;
+                        width: 140px;
+                        transition: all 0.5s ease;
+                        z-index: 3;
+
+                        &:hover, &:active, &:focus{
+                            margin-right: -100px;
+                        }
+                    }
+    
+                    &.delete{
+                        width: 100px;
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .menu{
     background-color: rgba($darkColor, 0.2);
     position: fixed;
@@ -976,7 +1099,7 @@ body{
     left: 0;
     background-color: rgba($blackColor, 0.4);
     z-index: 11999;
-    // backdrop-filter: blur(2px);
+    backdrop-filter: grayscale(10);
 
     @media screen and (max-width: 700px) {
         background-color: rgba($darkColor, 0.2);

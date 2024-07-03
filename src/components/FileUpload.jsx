@@ -201,7 +201,7 @@ const FileUpload = ({setIsUploading, isUploading, showBigImage, currentDb, selec
               You haven't added any Images
             </div> }
           </>}
-          <div className="actions-holder">
+          <div className="actions-holder xtra">
             <div className={`action ${!adding ? "active" : ""}`} onClick={()=>{
               setAdding(false)
             }}>

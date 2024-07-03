@@ -158,7 +158,7 @@ export default function Home() {
       <Head>
         <title>Cloudx ~ {currentDb.name || "Bytegen"}</title>
       </Head>
-      {showingBigImage && <BigImage removeImage={removeImage} image={bigImageDetails} closeBigImage={
+      {showingBigImage && <BigImage currentDb={currentDb} removeImage={removeImage} image={bigImageDetails} closeBigImage={
         ()=>{
           setShowingBigImage(false)
         }
