@@ -9,6 +9,8 @@ import { FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { useState } from "react";
 import { HiMenuAlt4, HiX } from "react-icons/hi";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +20,7 @@ export default function Home() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [bigImageDetails, setBigImageDetails] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [currentDb, setCurrentDb] = useState({
     name: "",
     id: "",
@@ -59,6 +62,15 @@ export default function Home() {
         alert("Your Password must be 8 Characters or more")
         return
       }
+
+      setIsLoading(true)
+      await addDoc(collection(db, "databases"), {
+        name,
+        databaseId: id,
+        password,
+      });
+      setIsLoading(false)
+      setIsCreating(false)
     } else{
       alert("Please Fill the required fields")
     }
@@ -74,7 +86,29 @@ export default function Home() {
         alert("Your Password must be 8 Characters or more")
         return
       }
-      
+
+      setIsLoading(true)
+
+      const querySnapshot = await getDocs(collection(db, "databases"));
+      const databases:any = [];
+      querySnapshot.forEach((doc) => {
+        databases.push({ id: doc.id, ...doc.data() });
+      });
+
+      const targetDatabase = databases?.find((database:any)=>{
+        return database?.databaseId === id
+      })
+
+      if(targetDatabase){
+        if(targetDatabase?.password === password){
+          setCurrentDb(targetDatabase)
+          setIsLoading(false)
+        }
+      } else{
+        setIsLoading(false)
+        alert("404: Database does not exist")
+      }
+
     } else{
       alert("Please Fill the required fields")
     }
@@ -125,7 +159,7 @@ export default function Home() {
             </div> 
           </div>
         </div>
-        {!currentDb?.id ? <div className="upload-holder">
+        {!currentDb?.id ? <div className={`upload-holder ${isLoading ? "uploading" : ""}`}>
           <h1>{isCreating ? "Create a Database" : "Sign in"}</h1>
           {isCreating ? <div className="form dropzone">
             <div className="input-el">
@@ -138,7 +172,9 @@ export default function Home() {
             </div>
             <div className="input-el">
               <label htmlFor="">
-                Unique ID*
+                Unique ID* <small style={{
+                  color: "#fff5",
+                }}><i>(will be needed to sign in)</i></small>
               </label>
               <input type="text" value={id} onChange={(e)=>{
                 setId(e.target.value)
@@ -193,6 +229,10 @@ export default function Home() {
               Signin
             </div>
           </div>
+          {isLoading && <div className="loader">
+            <div className="spinner"></div>
+            {isCreating ? "Creating Database" : "Fetching Database..."}
+          </div>}
         </div> :
         <div className={`upload-holder ${isUploading ? "uploading" : ""}`}>
           <h1>Upload Images</h1>
